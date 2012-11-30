@@ -21,6 +21,7 @@ import cookielib
 import httplib
 import re
 import sys
+import time
 
 import sickbeard
 from sickbeard import logger
@@ -78,10 +79,24 @@ def sendTORRENT(result):
     try:
         open_request = urllib2.urlopen(add_url)
         logger.log(u"Torrent sent to uTorrent successfully", logger.DEBUG)
-        return True
     except:
         logger.log(u"Unknown failure sending Torrent to uTorrent", logger.ERROR)
-        return False 
+        return False
+        
+    list_url = "%s?list=1&token=%s" % (host, token)
+    time.sleep(0.3)
+    # I feel stupid for having to add this but the webui didn't update immediately and I don't know python that well
+    
+    try:
+        list = urllib2.urlopen(list_url)
+        torrent_hash = re.findall('([\w]{32,40})', list.read())
+        label_url = "%s?action=setprops&token=%s&s=label&v=TV&hash=%s" % (host, token, torrent_hash[-1])
+        open_request = urllib2.urlopen(label_url)
+        logger.log(u"Torrent labeled as TV succesfully", logger.DEBUG)
+        return True
+    except:
+        logger.log(u"Unknown failure labeling torrent", logger.ERROR)
+        return True
     
 def testAuthentication(host, username, password):
     
