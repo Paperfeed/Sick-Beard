@@ -84,7 +84,7 @@ def sendTORRENT(result):
         return False
         
     list_url = "%s?list=1&token=%s" % (host, token)
-    time.sleep(0.3)
+    time.sleep(0.5)
     # I feel stupid for having to add this but the webui didn't update immediately and I don't know python that well
     
     try:
